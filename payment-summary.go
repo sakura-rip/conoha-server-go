@@ -13,7 +13,7 @@ type PaymentSummary struct {
 }
 
 func (c *Conoha) GetPaymentSummary() (int, error) {
-	r, err := req.Get(c.endPoint.ToUrl(AccountService), c.header)
+	r, err := req.Get(c.endPoint.ToUrl(AccountService, "payment-summary"), c.header)
 	if err != nil {
 		return -1, err
 	}

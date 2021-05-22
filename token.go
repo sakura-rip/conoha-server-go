@@ -76,7 +76,7 @@ func (c *Conoha) issueApiToken(userName, password, tenantId string) (string, err
 		},
 		TenantId: tenantId,
 	}})
-	r, err := req.Post(c.endPoint.ToUrl(IdentityService)+"/tokens", body)
+	r, err := req.Post(c.endPoint.ToUrl(IdentityService, "tokens"), body)
 	if err != nil {
 		return "", xerrors.Errorf("failed get token: %w", err)
 	}
