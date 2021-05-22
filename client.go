@@ -8,10 +8,11 @@ import (
 type Conoha struct {
 	header   req.Header
 	endPoint *EndPoint
+	tenantId string
 }
 
 func NewConohaClient(userName, password, tenantId string) (*Conoha, error) {
-	cl := &Conoha{endPoint: NewEndPoint(tenantId), header: req.Header{}}
+	cl := &Conoha{endPoint: NewEndPoint(tenantId), header: req.Header{}, tenantId: tenantId}
 	token, err := cl.issueApiToken(userName, password, tenantId)
 	if err != nil {
 		return nil, xerrors.Errorf("failed create conoha client: %w", err)
