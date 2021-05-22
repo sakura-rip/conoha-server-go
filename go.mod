@@ -1,0 +1,1 @@
+module github.com/sakura-rip/conoha-server-go
