@@ -85,3 +85,14 @@ func (c *Conoha) DeleteVPS(id string) error {
 	}
 	return nil
 }
+
+func (c *Conoha) StartVPS(id string) error {
+	r, err := req.Delete(c.endPoint.ToUrl(ComputeService, "servers", id, "action"), req.BodyJSON(map[string]interface{}{"on-start": nil}))
+	if err != nil {
+		return err
+	}
+	if r.Response().StatusCode != 202 {
+		return xerrors.Errorf("wrong status code: %v, message: %v", r.Response().StatusCode, r.String())
+	}
+	return nil
+}
