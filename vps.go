@@ -6,7 +6,7 @@ import (
 )
 
 type GetVPSListResponse struct {
-	Servers []GetVPSListResponseServer `json:"servers"`
+	Servers []*GetVPSListResponseServer `json:"servers"`
 }
 type GetVPSListResponseServer struct {
 	ID    string `json:"id"`
@@ -17,7 +17,7 @@ type GetVPSListResponseServer struct {
 	Name string `json:"name"`
 }
 
-func (c *Conoha) GetVPSList() ([]GetVPSListResponseServer, error) {
+func (c *Conoha) GetVPSList() ([]*GetVPSListResponseServer, error) {
 	r, err := req.Get(c.endPoint.ToUrl(ComputeService, "servers"), c.header)
 	if err != nil {
 		return nil, err
@@ -34,7 +34,7 @@ func (c *Conoha) GetVPSList() ([]GetVPSListResponseServer, error) {
 }
 
 type CreateVPSRequest struct {
-	Server CreateVPSRequestServer `json:"server"`
+	Server *CreateVPSRequestServer `json:"server"`
 }
 type CreateVPSRequestServer struct {
 	ImageRef  string `json:"imageRef"`
@@ -98,7 +98,7 @@ func (c *Conoha) StartVPS(id string) error {
 }
 
 type RebootVPSRequest struct {
-	Reboot RebootVPSRequestReboot `json:"reboot"`
+	Reboot *RebootVPSRequestReboot `json:"reboot"`
 }
 type RebootVPSRequestReboot struct {
 	Type string `json:"type"`
@@ -108,7 +108,7 @@ func (c *Conoha) RebootVPS(id, bootType string) error {
 	if bootType != "SOFT" && bootType != "HARD" {
 		return xerrors.New("boot type must be SOFT or HARD")
 	}
-	body := req.BodyJSON(RebootVPSRequest{RebootVPSRequestReboot{Type: bootType}})
+	body := req.BodyJSON(RebootVPSRequest{&RebootVPSRequestReboot{Type: bootType}})
 	r, err := req.Post(c.endPoint.ToUrl(ComputeService, "servers", id, "action"), body)
 	if err != nil {
 		return err
@@ -120,14 +120,14 @@ func (c *Conoha) RebootVPS(id, bootType string) error {
 }
 
 type ShutdownVPSRequest struct {
-	OsStop ShutdownVPSRequestOsStop `json:"os-stop"`
+	OsStop *ShutdownVPSRequestOsStop `json:"os-stop"`
 }
 type ShutdownVPSRequestOsStop struct {
 	ForceShutdown bool `json:"force_shutdown"`
 }
 
 func (c *Conoha) ShutdownVPS(id string, force bool) error {
-	body := req.BodyJSON(ShutdownVPSRequest{ShutdownVPSRequestOsStop{force}})
+	body := req.BodyJSON(ShutdownVPSRequest{&ShutdownVPSRequestOsStop{force}})
 	r, err := req.Post(c.endPoint.ToUrl(ComputeService, "servers", id, "action"), body)
 	if err != nil {
 		return err
@@ -136,4 +136,62 @@ func (c *Conoha) ShutdownVPS(id string, force bool) error {
 		return xerrors.Errorf("wrong status code: %v, message: %v", r.Response().StatusCode, r.String())
 	}
 	return nil
+}
+
+type FixedIp struct {
+	IPAddress string `json:"ip_address"`
+	SubnetID  string `json:"subnet_id"`
+}
+
+type GetAttachedPortsListResponse struct {
+	InterfaceAttachments []*InterfaceAttachment `json:"interfaceAttachments"`
+}
+type InterfaceAttachment struct {
+	FixedIps []struct {
+		IPAddress string `json:"ip_address"`
+		SubnetID  string `json:"subnet_id"`
+	} `json:"fixed_ips"`
+	MacAddr   string `json:"mac_addr"`
+	NetID     string `json:"net_id"`
+	PortID    string `json:"port_id"`
+	PortState string `json:"port_state"`
+}
+
+func (c *Conoha) GetAttachedPortsList(id string) ([]*InterfaceAttachment, error) {
+	r, err := req.Get(c.endPoint.ToUrl(ComputeService, c.tenantId, "servers", id, "os-interface"))
+	if err != nil {
+		return nil, err
+	}
+	if r.Response().StatusCode != 200 {
+		return nil, xerrors.Errorf("wrong status code: %v, message: %v", r.Response().StatusCode, r.String())
+	}
+	res := GetAttachedPortsListResponse{}
+	err = r.ToJSON(&res)
+	if err != nil {
+		return nil, err
+	}
+	return res.InterfaceAttachments, nil
+}
+
+type AttachPortToVPSResponse struct {
+	InterfaceAttachment *InterfaceAttachment `json:"interfaceAttachment"`
+}
+
+func (c *Conoha) AttachPortToVPS(serverId, portId string) (*InterfaceAttachment, error) {
+	data := req.BodyJSON(map[string]interface{}{
+		"interfaceAttachment": map[string]interface{}{"port_id": portId},
+	})
+	r, err := req.Post(c.endPoint.ToUrl(ComputeService, c.tenantId, "servers", serverId, "os-interface"), data)
+	if err != nil {
+		return nil, err
+	}
+	if r.Response().StatusCode != 200 {
+		return nil, xerrors.Errorf("wrong status code: %v, message: %v", r.Response().StatusCode, r.String())
+	}
+	res := AttachPortToVPSResponse{}
+	err = r.ToJSON(&res)
+	if err != nil {
+		return nil, err
+	}
+	return res.InterfaceAttachment, nil
 }
