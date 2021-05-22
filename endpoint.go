@@ -28,9 +28,13 @@ func NewEndPoint(tenantId string) *EndPoint {
 	return &EndPoint{tenantId: tenantId}
 }
 
-func (e *EndPoint) ToUrl(path Path) string {
-	if strings.Contains(string(path), "%v") {
-		return fmt.Sprintf(string(path), e.tenantId)
+func (e *EndPoint) ToUrl(path Path, attrs ...string) string {
+	path_ := string(path)
+	if len(attrs) != 0 {
+		path_ += "/" + strings.Join(attrs, "/")
 	}
-	return string(path)
+	if strings.Contains(path_, "%v") {
+		return fmt.Sprintf(path_, e.tenantId)
+	}
+	return path_
 }
