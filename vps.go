@@ -59,7 +59,7 @@ type CreateVPSResponse struct {
 }
 
 func (c *Conoha) CreateVPS(imageRef, flovorRef, adminPassword, sshKeyName string) (string, error) {
-	data := req.BodyJSON(CreateVPSRequest{Server: CreateVPSRequestServer{imageRef, flovorRef, adminPassword, sshKeyName}})
+	data := req.BodyJSON(CreateVPSRequest{Server: &CreateVPSRequestServer{imageRef, flovorRef, adminPassword, sshKeyName}})
 	r, err := req.Post(c.endPoint.ToUrl(ComputeService, "servers"), data)
 	if err != nil {
 		return "", err
