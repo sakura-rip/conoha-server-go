@@ -195,3 +195,14 @@ func (c *Conoha) AttachPortToVPS(serverId, portId string) (*InterfaceAttachment,
 	}
 	return res.InterfaceAttachment, nil
 }
+
+func (c *Conoha) DettachPortFromVPS(serverId, portId string) error {
+	r, err := req.Delete(c.endPoint.ToUrl(ComputeService, c.tenantId, "servers", serverId, "os-interface", portId))
+	if err != nil {
+		return err
+	}
+	if r.Response().StatusCode != 202 {
+		return xerrors.Errorf("wrong status code: %v, message: %v", r.Response().StatusCode, r.String())
+	}
+	return nil
+}
