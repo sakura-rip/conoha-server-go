@@ -118,3 +118,22 @@ func (c *Conoha) RebootVPS(id, bootType string) error {
 	}
 	return nil
 }
+
+type ShutdownVPSRequest struct {
+	OsStop ShutdownVPSRequestOsStop `json:"os-stop"`
+}
+type ShutdownVPSRequestOsStop struct {
+	ForceShutdown bool `json:"force_shutdown"`
+}
+
+func (c *Conoha) ShutdownVPS(id string, force bool) error {
+	body := req.BodyJSON(ShutdownVPSRequest{ShutdownVPSRequestOsStop{force}})
+	r, err := req.Post(c.endPoint.ToUrl(ComputeService, "servers", id, "action"), body)
+	if err != nil {
+		return err
+	}
+	if r.Response().StatusCode != 202 {
+		return xerrors.Errorf("wrong status code: %v, message: %v", r.Response().StatusCode, r.String())
+	}
+	return nil
+}
