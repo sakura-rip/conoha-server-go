@@ -37,16 +37,16 @@ type CreateVPSRequest struct {
 	Server CreateVPSRequestServer `json:"server"`
 }
 type CreateVPSRequestServer struct {
-	Imageref  string `json:"imageRef"`
-	Flavorref string `json:"flavorRef"`
-	Adminpass string `json:"adminPass"`
+	ImageRef  string `json:"imageRef"`
+	FlavorRef string `json:"flavorRef"`
+	AdminPass string `json:"adminPass"`
 	KeyName   string `json:"key_name"`
 }
 
 type CreateVPSResponse struct {
 	Server struct {
-		OsDcfDiskconfig string `json:"OS-DCF:diskConfig"`
-		Adminpass       string `json:"adminPass"`
+		OsDcfDiskConfig string `json:"OS-DCF:diskConfig"`
+		AdminPass       string `json:"adminPass"`
 		ID              string `json:"id"`
 		Links           []struct {
 			Href string `json:"href"`

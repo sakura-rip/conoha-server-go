@@ -34,10 +34,10 @@ type IssueApiTokenResponse struct {
 			} `json:"tenant"`
 			AuditIds []string `json:"audit_ids"`
 		} `json:"token"`
-		Servicecatalog []struct {
+		ServiceCatalog []struct {
 			Endpoints []struct {
 				Region    string `json:"region"`
-				Publicurl string `json:"publicURL"`
+				PublicUrl string `json:"publicURL"`
 			} `json:"endpoints"`
 			EndpointsLinks []interface{} `json:"endpoints_links"`
 			Type           string        `json:"type"`
