@@ -18,7 +18,7 @@ func (c *Conoha) GetPaymentSummary() (int, error) {
 		return -1, err
 	}
 	if r.Response().StatusCode != 200 {
-		return 0, xerrors.Errorf("wrong status code: %v, message: %v", r.Response().StatusCode, r.String())
+		return -1, xerrors.Errorf("wrong status code: %v, message: %v", r.Response().StatusCode, r.String())
 	}
 	res := GetPaymentSummaryResponse{}
 	err = r.ToJSON(&res)
