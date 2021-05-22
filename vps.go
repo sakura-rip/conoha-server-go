@@ -96,3 +96,25 @@ func (c *Conoha) StartVPS(id string) error {
 	}
 	return nil
 }
+
+type RebootVPSRequest struct {
+	Reboot RebootVPSRequestReboot `json:"reboot"`
+}
+type RebootVPSRequestReboot struct {
+	Type string `json:"type"`
+}
+
+func (c *Conoha) RebootVPS(id, bootType string) error {
+	if bootType != "SOFT" && bootType != "HARD" {
+		return xerrors.New("boot type must be SOFT or HARD")
+	}
+	body := req.BodyJSON(RebootVPSRequest{RebootVPSRequestReboot{Type: bootType}})
+	r, err := req.Post(c.endPoint.ToUrl(ComputeService, "servers", id, "action"), body)
+	if err != nil {
+		return err
+	}
+	if r.Response().StatusCode != 202 {
+		return xerrors.Errorf("wrong status code: %v, message: %v", r.Response().StatusCode, r.String())
+	}
+	return nil
+}
