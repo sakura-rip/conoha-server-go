@@ -1,14 +1,17 @@
 package conoha_server_go
 
-import "golang.org/x/xerrors"
+import (
+	"github.com/imroc/req"
+	"golang.org/x/xerrors"
+)
 
 type Conoha struct {
-	header   map[string]string
+	header   req.Header
 	endPoint *EndPoint
 }
 
 func NewConohaClient(userName, password, tenantId string) (*Conoha, error) {
-	cl := &Conoha{endPoint: NewEndPoint(tenantId), header: map[string]string{}}
+	cl := &Conoha{endPoint: NewEndPoint(tenantId), header: req.Header{}}
 	token, err := cl.issueApiToken(userName, password, tenantId)
 	if err != nil {
 		return nil, xerrors.Errorf("failed create conoha client: %w", err)
