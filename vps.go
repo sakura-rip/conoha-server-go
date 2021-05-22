@@ -74,3 +74,14 @@ func (c *Conoha) CreateVPS(imageRef, flovorRef, adminPassword, sshKeyName string
 	}
 	return res.Server.ID, nil
 }
+
+func (c *Conoha) DeleteVPS(id string) error {
+	r, err := req.Delete(c.endPoint.ToUrl(ComputeService, "servers", id))
+	if err != nil {
+		return err
+	}
+	if r.Response().StatusCode != 204 {
+		return xerrors.Errorf("wrong status code: %v, message: %v", r.Response().StatusCode, r.String())
+	}
+	return nil
+}
