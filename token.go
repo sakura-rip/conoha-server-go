@@ -80,6 +80,9 @@ func (c *Conoha) issueApiToken(userName, password, tenantId string) (string, err
 	if err != nil {
 		return "", xerrors.Errorf("failed get token: %w", err)
 	}
+	if r.Response().StatusCode != 200 {
+		return "", xerrors.Errorf("wrong status code: %v, message: %v", r.Response().StatusCode, r.String())
+	}
 	var res GetTokenResponse
 	err = r.ToJSON(&res)
 	if err != nil {
