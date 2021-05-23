@@ -1,0 +1,45 @@
+package conoha_server_go
+
+import (
+	"github.com/imroc/req"
+	"golang.org/x/xerrors"
+)
+
+type Subnet struct {
+	Name            string      `json:"name"`
+	EnableDhcp      bool        `json:"enable_dhcp"`
+	NetworkID       string      `json:"network_id"`
+	TenantID        string      `json:"tenant_id"`
+	DNSNameservers  []string    `json:"dns_nameservers"`
+	GatewayIP       string      `json:"gateway_ip"`
+	Ipv6RaMode      interface{} `json:"ipv6_ra_mode"`
+	AllocationPools []struct {
+		Start string `json:"start"`
+		End   string `json:"end"`
+	} `json:"allocation_pools"`
+	HostRoutes      []interface{} `json:"host_routes"`
+	IPVersion       int           `json:"ip_version"`
+	Ipv6AddressMode interface{}   `json:"ipv6_address_mode"`
+	Cidr            string        `json:"cidr"`
+	ID              string        `json:"id"`
+}
+
+type GetSubnetListResponse struct {
+	Subnets []Subnet `json:"subnets"`
+}
+
+func (c *Conoha) GetSubnetList() ([]Subnet, error) {
+	r, err := req.Get(c.endPoint.ToUrl(NetworkService, "subnets"))
+	if err != nil {
+		return nil, err
+	}
+	if r.Response().StatusCode != 200 {
+		return nil, xerrors.Errorf("wrong status code: %v, message: %v", r.Response().StatusCode, r.String())
+	}
+	res := GetSubnetListResponse{}
+	err = r.ToJSON(&res)
+	if err != nil {
+		return nil, err
+	}
+	return res.Subnets, nil
+}
