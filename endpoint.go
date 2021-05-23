@@ -17,7 +17,7 @@ const (
 	ObjectStorageService Path = "https://object-storage.tyo2.conoha.io/v1/nc_%v"
 	MailService          Path = "https://mail-hosting.tyo2.conoha.io/v1"
 	IdentityService      Path = "https://identity.tyo2.conoha.io/v2.0"
-	NetworkService       Path = "https://networking.tyo2.conoha.io"
+	NetworkService       Path = "https://networking.tyo2.conoha.io/v2.0"
 )
 
 type EndPoint struct {
