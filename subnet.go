@@ -29,7 +29,7 @@ type GetSubnetListResponse struct {
 }
 
 func (c *Conoha) GetSubnetList() ([]Subnet, error) {
-	r, err := req.Get(c.endPoint.ToUrl(NetworkService, "subnets"))
+	r, err := req.Get(c.endPoint.ToUrl(NetworkService, "subnets"), c.header)
 	if err != nil {
 		return nil, err
 	}
