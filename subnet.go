@@ -64,7 +64,7 @@ func (c *Conoha) AddSubnetForAdditionalIp(count string) (*Subnet, error) {
 		Bitmask string `json:"bitmask"`
 	}(struct{ Bitmask string }{Bitmask: count})})
 
-	r, err := req.Post(c.endPoint.ToUrl(NetworkService, "allocateips"), data)
+	r, err := req.Post(c.endPoint.ToUrl(NetworkService, "allocateips"), data, c.header)
 	if err != nil {
 		return nil, err
 	}
@@ -80,7 +80,7 @@ func (c *Conoha) AddSubnetForAdditionalIp(count string) (*Subnet, error) {
 }
 
 func (c *Conoha) DeleteSubnet(subnetId string) error {
-	r, err := req.Delete(c.endPoint.ToUrl(NetworkService, "subnets", subnetId))
+	r, err := req.Delete(c.endPoint.ToUrl(NetworkService, "subnets", subnetId), c.header)
 	if err != nil {
 		return err
 	}

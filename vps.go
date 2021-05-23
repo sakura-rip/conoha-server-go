@@ -60,7 +60,7 @@ type CreateVPSResponse struct {
 
 func (c *Conoha) CreateVPS(imageRef, flovorRef, adminPassword, sshKeyName string) (string, error) {
 	data := req.BodyJSON(CreateVPSRequest{Server: &CreateVPSRequestServer{imageRef, flovorRef, adminPassword, sshKeyName}})
-	r, err := req.Post(c.endPoint.ToUrl(ComputeService, "servers"), data)
+	r, err := req.Post(c.endPoint.ToUrl(ComputeService, "servers"), data, c.header)
 	if err != nil {
 		return "", err
 	}
@@ -76,7 +76,7 @@ func (c *Conoha) CreateVPS(imageRef, flovorRef, adminPassword, sshKeyName string
 }
 
 func (c *Conoha) DeleteVPS(id string) error {
-	r, err := req.Delete(c.endPoint.ToUrl(ComputeService, "servers", id))
+	r, err := req.Delete(c.endPoint.ToUrl(ComputeService, "servers", id), c.header)
 	if err != nil {
 		return err
 	}
@@ -109,7 +109,7 @@ func (c *Conoha) RebootVPS(id, bootType string) error {
 		return xerrors.New("boot type must be SOFT or HARD")
 	}
 	body := req.BodyJSON(RebootVPSRequest{&RebootVPSRequestReboot{Type: bootType}})
-	r, err := req.Post(c.endPoint.ToUrl(ComputeService, "servers", id, "action"), body)
+	r, err := req.Post(c.endPoint.ToUrl(ComputeService, "servers", id, "action"), body, c.header)
 	if err != nil {
 		return err
 	}
@@ -128,7 +128,7 @@ type ShutdownVPSRequestOsStop struct {
 
 func (c *Conoha) ShutdownVPS(id string, force bool) error {
 	body := req.BodyJSON(ShutdownVPSRequest{&ShutdownVPSRequestOsStop{force}})
-	r, err := req.Post(c.endPoint.ToUrl(ComputeService, "servers", id, "action"), body)
+	r, err := req.Post(c.endPoint.ToUrl(ComputeService, "servers", id, "action"), body, c.header)
 	if err != nil {
 		return err
 	}
@@ -158,7 +158,7 @@ type InterfaceAttachment struct {
 }
 
 func (c *Conoha) GetAttachedPortsList(id string) ([]*InterfaceAttachment, error) {
-	r, err := req.Get(c.endPoint.ToUrl(ComputeService, c.tenantId, "servers", id, "os-interface"))
+	r, err := req.Get(c.endPoint.ToUrl(ComputeService, c.tenantId, "servers", id, "os-interface"), c.header)
 	if err != nil {
 		return nil, err
 	}
@@ -181,7 +181,7 @@ func (c *Conoha) AttachPortToVPS(serverId, portId string) (*InterfaceAttachment,
 	data := req.BodyJSON(map[string]interface{}{
 		"interfaceAttachment": map[string]interface{}{"port_id": portId},
 	})
-	r, err := req.Post(c.endPoint.ToUrl(ComputeService, c.tenantId, "servers", serverId, "os-interface"), data)
+	r, err := req.Post(c.endPoint.ToUrl(ComputeService, c.tenantId, "servers", serverId, "os-interface"), data, c.header)
 	if err != nil {
 		return nil, err
 	}
@@ -197,7 +197,7 @@ func (c *Conoha) AttachPortToVPS(serverId, portId string) (*InterfaceAttachment,
 }
 
 func (c *Conoha) DettachPortFromVPS(serverId, portId string) error {
-	r, err := req.Delete(c.endPoint.ToUrl(ComputeService, c.tenantId, "servers", serverId, "os-interface", portId))
+	r, err := req.Delete(c.endPoint.ToUrl(ComputeService, c.tenantId, "servers", serverId, "os-interface", portId), c.header)
 	if err != nil {
 		return err
 	}

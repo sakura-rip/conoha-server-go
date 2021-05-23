@@ -29,7 +29,7 @@ type GetPortListResponse struct {
 }
 
 func (c *Conoha) GetPortList() ([]Port, error) {
-	r, err := req.Get(c.endPoint.ToUrl(NetworkService, "ports"))
+	r, err := req.Get(c.endPoint.ToUrl(NetworkService, "ports"), c.header)
 	if err != nil {
 		return nil, err
 	}
@@ -61,7 +61,7 @@ type AddPortResponse struct {
 
 func (c *Conoha) AddPort(networkID string) (*Port, error) {
 	data := req.BodyJSON(AddPortRequest{AddPortRequestPort{NetworkID: networkID, FixedIps: []AddPortRequestFixedIps{}}})
-	r, err := req.Get(c.endPoint.ToUrl(NetworkService), data)
+	r, err := req.Get(c.endPoint.ToUrl(NetworkService), data, c.header)
 	if err != nil {
 		return nil, err
 	}
@@ -77,7 +77,7 @@ func (c *Conoha) AddPort(networkID string) (*Port, error) {
 }
 
 func (c *Conoha) DeletePort(portId string) error {
-	r, err := req.Delete(c.endPoint.ToUrl(NetworkService, "ports", portId))
+	r, err := req.Delete(c.endPoint.ToUrl(NetworkService, "ports", portId), c.header)
 	if err != nil {
 		return err
 	}
