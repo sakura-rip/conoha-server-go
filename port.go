@@ -75,3 +75,14 @@ func (c *Conoha) AddPort(networkID string) (*Port, error) {
 	}
 	return res.Port, nil
 }
+
+func (c *Conoha) DeletePort(portId string) error {
+	r, err := req.Delete(c.endPoint.ToUrl(NetworkService, "ports", portId))
+	if err != nil {
+		return err
+	}
+	if r.Response().StatusCode != 204 {
+		return xerrors.Errorf("wrong status code: %v, message: %v", r.Response().StatusCode, r.String())
+	}
+	return nil
+}
