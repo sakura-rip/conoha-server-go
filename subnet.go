@@ -78,3 +78,14 @@ func (c *Conoha) AddSubnetForAdditionalIp(count string) (*Subnet, error) {
 	}
 	return res.Subnet, nil
 }
+
+func (c *Conoha) DeleteSubnet(subnetId string) error {
+	r, err := req.Delete(c.endPoint.ToUrl(NetworkService, "subnets", subnetId))
+	if err != nil {
+		return err
+	}
+	if r.Response().StatusCode != 204 {
+		return xerrors.Errorf("wrong status code: %v, message: %v", r.Response().StatusCode, r.String())
+	}
+	return nil
+}
